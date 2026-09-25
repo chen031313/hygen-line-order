@@ -1,13 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Han**>
 <head>
-  <meta charset="utf-8">
-  <title>HY-GEN TEST</title>
+<meta charset="UTF-8">
+<**ta name="viewport" content="width**evice-width, initial-scale=1">
+
+<**tle>HY-GEN 官方訂購</title>
+
+<script **c**https://static.line-scdn.net/liff**dge/2/sdk.js"></script>
+
+<style>
+**dy{
+  font-family: Arial, sans-se**f;
+  text-align:center;
+  padding**0px;
+}
+</style>
 </head>
 
 <body>
 
-<h1>HY-GEN GitHub Pages OK</h1>
+**2>HY-GEN 官方訂購</h2>
+
+<div id="stat**">
+正在確認 LINE 身分...
+</div**
+<script>
+
+const LIFF_ID =
+'20117**131-4t8968gD';
+
+async function ma**(){
+
+  try{
+
+    await liff.init(**      liffId: LIFF_ID
+    });
+
+  **if(!liff.isLoggedIn()){
+
+      li**.login({
+        redirectUri: win**w.location.href
+      });
+
+      **turn;
+    }
+
+    const profile =
+**    await liff.getProfile();
+
+   **ocument.getElementById("status")
+**    .innerHTML =
+      "LINE暱稱：<b**" +
+      profile.displayName +
+ **   "<br><br>" +
+      "User ID：<b**" +
+      profile.userId;
+
+  }
+  **tch(err){
+
+    document.getElemen**yId("status")
+      .innerHTML =
+**    "錯誤：<br>" +
+      (err.messag**|| JSON.stringify(err));
+
+  }
+
+}
+**ain();
+
+</script>
 
 </body>
-</html>
+</html**
