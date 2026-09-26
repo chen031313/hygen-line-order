@@ -7,7 +7,7 @@
 
 <body>
 
-<h2>HY-GEN LIFF TEST</h2>
+<h2>HY-GEN User ID 測試</h2>
 
 <div id="status">Loading...</div>
 
@@ -25,18 +25,21 @@
       withLoginOnExternalBrowser: true
     });
 
+    const profile =
+      await liff.getProfile();
+
     status.innerHTML =
-      "isInClient = " +
-      liff.isInClient() +
+      "LINE暱稱：<br>" +
+      profile.displayName +
       "<br><br>" +
-      "isLoggedIn = " +
-      liff.isLoggedIn();
+      "User ID：<br>" +
+      profile.userId;
 
   }
   catch(e){
 
     status.innerHTML =
-      "ERROR = " +
+      "ERROR：<br>" +
       (e.message || JSON.stringify(e));
 
   }
