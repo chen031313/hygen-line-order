@@ -1,85 +1,196 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
 
-<title>HY-GEN 官方訂購</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
 
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <title>HY-GEN 官方訂購</title>
 
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f3f8f4;
+      color: #23382a;
+      font-family: Arial, "Noto Sans TC", sans-serif;
+    }
+
+    .card {
+      max-width: 420px;
+      margin: 40px auto;
+      padding: 30px 24px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 8px 28px rgba(33, 91, 51, 0.12);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #287446;
+    }
+
+    #status {
+      line-height: 1.8;
+      word-break: break-word;
+    }
+
+    .error {
+      color: #b3261e;
+    }
+
+    button {
+      display: none;
+      width: 100%;
+      margin-top: 20px;
+      padding: 13px 16px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+      background: #287446;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="card">
+    <h2>HY-GEN 官方訂購</h2>
 
-<div id="status">
-正在確認 LINE 身分...
-</div>
+    <div id="status">
+      正在確認 LINE 身分，請勿關閉頁面。
+    </div>
 
-<script>
+    <button id="formButton" type="button">
+      開啟訂購表單
+    </button>
+  </div>
 
-const LIFF_ID =
-'2011746131-4t8968gD';
+  <script>
+    const LIFF_ID = '2011746131-4t8968gD';
 
-const GOOGLE_FORM_URL =
-'https://docs.google.com/forms/d/e/1FAIpQLSfp6klqau35pk7mU09NzQctTRaO8RK48QoFwTjS06I82BYemw/viewform';
+    const GOOGLE_FORM_URL =
+      'https://docs.google.com/forms/d/e/1FAIpQLSfp6klqau35pk7mU09NzQctTRaO8RK48QoFwTjS06I82BYemw/viewform';
 
-const USER_ID_ENTRY =
-'entry.1921004516';
+    const USER_ID_ENTRY =
+      'entry.1921004516';
 
-const DISPLAY_NAME_ENTRY =
-'entry.2088168912';
+    const DISPLAY_NAME_ENTRY =
+      'entry.2088168912';
 
-(async () => {
+    async function startOrder() {
+      const status =
+        document.getElementById('status');
 
-  const status =
-    document.getElementById("status");
+      const formButton =
+        document.getElementById('formButton');
 
-  try {
+      try {
+        status.textContent =
+          '正在初始化 LINE 服務。';
 
-    await liff.init({
-      liffId: LIFF_ID,
-      withLoginOnExternalBrowser: true
-    });
+        await liff.init({
+          liffId: LIFF_ID,
+          withLoginOnExternalBrowser: true
+        });
 
-    const profile =
-      await liff.getProfile();
+        if (!liff.isLoggedIn()) {
+          status.textContent =
+            '正在開啟 LINE 登入。';
 
-    const params =
-      new URLSearchParams();
+          liff.login({
+            redirectUri: window.location.href
+          });
 
-    params.set(
-      USER_ID_ENTRY,
-      profile.userId
+          return;
+        }
+
+        status.textContent =
+          '正在取得 LINE 使用者資料。';
+
+        const profile =
+          await liff.getProfile();
+
+        const lineUserId =
+          String(profile.userId || '').trim();
+
+        const lineDisplayName =
+          String(profile.displayName || '').trim();
+
+        if (!/^U[0-9a-f]{32}$/i.test(lineUserId)) {
+          throw new Error(
+            '無法取得有效的 LINE User ID'
+          );
+        }
+
+        const params =
+          new URLSearchParams();
+
+        params.set('usp', 'pp_url');
+
+        params.set(
+          USER_ID_ENTRY,
+          lineUserId
+        );
+
+        params.set(
+          DISPLAY_NAME_ENTRY,
+          lineDisplayName
+        );
+
+        const finalUrl =
+          GOOGLE_FORM_URL +
+          '?' +
+          params.toString();
+
+        status.innerHTML =
+          '<strong>LINE 身分確認成功</strong>' +
+          '<br><br>LINE 暱稱：' +
+          escapeHtml(lineDisplayName) +
+          '<br><br>正在開啟 HY-GEN 訂購表單。';
+
+        formButton.style.display = 'block';
+
+        formButton.onclick = function () {
+          window.location.replace(finalUrl);
+        };
+
+        setTimeout(function () {
+          window.location.replace(finalUrl);
+        }, 1500);
+
+      } catch (error) {
+        console.error(error);
+
+        status.classList.add('error');
+
+        status.textContent =
+          '無法開啟訂購系統：' +
+          (error.message || String(error));
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    window.addEventListener(
+      'load',
+      startOrder
     );
-
-    params.set(
-      DISPLAY_NAME_ENTRY,
-      profile.displayName
-    );
-
-    const finalUrl =
-      GOOGLE_FORM_URL +
-      "?usp=pp_url&" +
-      params.toString();
-
-    status.innerHTML =
-      "身份驗證成功，正在開啟表單...";
-
-    window.location.href =
-      finalUrl;
-
-  }
-  catch(e){
-
-    status.innerHTML =
-      "錯誤：" +
-      (e.message || JSON.stringify(e));
-
-  }
-
-})();
-
-</script>
-
+  </script>
 </body>
 </html>
