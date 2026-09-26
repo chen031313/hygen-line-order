@@ -2,21 +2,21 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>HY-GEN LIFF TEST</title>
-
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
 
-<div id="msg">START</div>
+<h2>HY-GEN LIFF TEST</h2>
+
+<div id="status">Loading...</div>
 
 <script>
 
 (async () => {
 
-  const msg =
-    document.getElementById("msg");
+  const status =
+    document.getElementById("status");
 
   try {
 
@@ -25,7 +25,7 @@
       withLoginOnExternalBrowser: true
     });
 
-    msg.innerHTML =
+    status.innerHTML =
       "isInClient = " +
       liff.isInClient() +
       "<br><br>" +
@@ -33,9 +33,9 @@
       liff.isLoggedIn();
 
   }
-  catch(e) {
+  catch(e){
 
-    msg.innerHTML =
+    status.innerHTML =
       "ERROR = " +
       (e.message || JSON.stringify(e));
 
