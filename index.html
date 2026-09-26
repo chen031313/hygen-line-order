@@ -1,13 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>TEST</title>
+<meta charset="utf-8">
+<title>HY-GEN LIFF TEST</title>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 
 <body>
 
-<h1>TEST OK</h1>
+<div id="msg">START</div>
+
+<script>
+
+(async () => {
+
+  const msg =
+    document.getElementById("msg");
+
+  try {
+
+    await liff.init({
+      liffId: "2011746131-4t8968gD",
+      withLoginOnExternalBrowser: true
+    });
+
+    msg.innerHTML =
+      "isInClient = " +
+      liff.isInClient() +
+      "<br><br>" +
+      "isLoggedIn = " +
+      liff.isLoggedIn();
+
+  }
+  catch(e) {
+
+    msg.innerHTML =
+      "ERROR = " +
+      (e.message || JSON.stringify(e));
+
+  }
+
+})();
+
+</script>
 
 </body>
 </html>
