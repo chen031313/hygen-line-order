@@ -1,17 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
-<meta charset="utf-8">
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<title>HY-GEN 官方訂購</title>
+
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+</head>
 <body>
 
-<h2>HY-GEN User ID 測試</h2>
-
-<div id="status">Loading...</div>
+<div id="status">
+正在確認 LINE 身分...
+</div>
 
 <script>
+
+const LIFF_ID =
+'2011746131-4t8968gD';
+
+const GOOGLE_FORM_URL =
+'https://docs.google.com/forms/d/e/1FAIpQLSfp6klqau35pk7mU09NzQctTRaO8RK48QoFwTjS06I82BYemw/viewform';
+
+const USER_ID_ENTRY =
+'entry.1921004516';
+
+const DISPLAY_NAME_ENTRY =
+'entry.2088168912';
 
 (async () => {
 
@@ -21,25 +37,42 @@
   try {
 
     await liff.init({
-      liffId: "2011746131-4t8968gD",
+      liffId: LIFF_ID,
       withLoginOnExternalBrowser: true
     });
 
     const profile =
       await liff.getProfile();
 
+    const params =
+      new URLSearchParams();
+
+    params.set(
+      USER_ID_ENTRY,
+      profile.userId
+    );
+
+    params.set(
+      DISPLAY_NAME_ENTRY,
+      profile.displayName
+    );
+
+    const finalUrl =
+      GOOGLE_FORM_URL +
+      "?usp=pp_url&" +
+      params.toString();
+
     status.innerHTML =
-      "LINE暱稱：<br>" +
-      profile.displayName +
-      "<br><br>" +
-      "User ID：<br>" +
-      profile.userId;
+      "身份驗證成功，正在開啟表單...";
+
+    window.location.href =
+      finalUrl;
 
   }
   catch(e){
 
     status.innerHTML =
-      "ERROR：<br>" +
+      "錯誤：" +
       (e.message || JSON.stringify(e));
 
   }
